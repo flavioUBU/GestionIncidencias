@@ -28,10 +28,11 @@ jobs:
         run: mvn clean package -DskipTests
 
       - name: SonarQube Cloud Scan
-        uses: SonarSource/sonarqube-scan-action@v4
+        uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
             -Dsonar.projectKey=flavioUBU_GestionIncidencias
             -Dsonar.organization=flavioubu
+            -Dsonar.java.binaries=target/classes
