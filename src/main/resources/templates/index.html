@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gestión de Incidencias</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/}">Gestión de Incidencias</a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link text-white" th:href="@{/login}">Login</a>
+            <a class="nav-link text-white" th:href="@{/usuarios}">Usuarios</a>
+            <a class="nav-link text-white" th:href="@{/incidencias}">Incidencias</a>
+            <a class="nav-link text-white" th:href="@{/api-test}">API Externa</a>
+            <a class="nav-link text-white" th:href="@{/chat}">Chat</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container py-5">
+    <div class="p-5 mb-4 bg-white rounded-4 shadow-sm border">
+        <div class="container-fluid py-3">
+            <h1 class="display-5 fw-bold text-primary">Sistema de Gestión de Incidencias</h1>
+            <p class="col-md-9 fs-5 text-secondary">
+                Aplicación web desarrollada con Spring Boot, Thymeleaf y MySQL.
+                Incluye autenticación segura, mantenimiento de usuarios, gestión de incidencias
+                y conexión con una API externa en Flask.
+            </p>
+            <div class="d-flex gap-2 flex-wrap mt-4">
+                <a class="btn btn-primary btn-lg" th:href="@{/incidencias}">Ver incidencias</a>
+                <a class="btn btn-outline-primary btn-lg" th:href="@{/usuarios}">Gestionar usuarios</a>
+                <a class="btn btn-outline-secondary btn-lg" th:href="@{/api-test}">Probar API externa</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title h4 text-primary">Usuarios</h3>
+                    <p class="card-text text-secondary">
+                        Alta, consulta, edición y borrado de usuarios con control de roles y contraseñas cifradas con BCrypt.
+                    </p>
+                    <a class="btn btn-sm btn-primary mt-auto align-self-start" th:href="@{/usuarios}">Ir a usuarios</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title h4 text-primary">Incidencias</h3>
+                    <p class="card-text text-secondary">
+                        Gestión completa de incidencias con creación, edición, borrado y asignación automática al usuario autenticado.
+                    </p>
+                    <a class="btn btn-sm btn-primary mt-auto align-self-start" th:href="@{/incidencias}">Ir a incidencias</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title h4 text-primary">API externa</h3>
+                    <p class="card-text text-secondary">
+                        Integración con una API en Flask para pruebas de excepciones, acceso a base de datos y llamadas a Pokémon.
+                    </p>
+                    <a class="btn btn-sm btn-primary mt-auto align-self-start" th:href="@{/api-test}">Ir a pruebas API</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title h4 text-primary">Chat</h3>
+                    <p class="card-text text-secondary">
+                        Comunicación en tiempo real entre usuarios mediante WebSocket integrada en Spring Boot.
+                    </p>
+                    <a class="btn btn-sm btn-primary mt-auto align-self-start" th:href="@{/chat}">Ir al chat</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
