@@ -1,14 +1,33 @@
+import os
 import requests
 import mysql.connector
 from flask import Flask, jsonify
 
 app = Flask(__name__)
 
+DB_HOST = os.getenv("MYSQL_HOST", "mysqldb")
+DB_PORT = int(os.getenv("MYSQL_PORT", "3306"))
+DB_USER = os.getenv("MYSQL_USER", "root")
+DB_PASSWORD = os.getenv("MYSQL_PASSWORD", "eneas2805")
+DB_NAME = os.getenv("MYSQL_DATABASE", "basicosd")
+
+
+def get_db_connection():
+    return mysql.connector.connect(
+        host=DB_HOST,
+        port=DB_PORT,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
+    )
+
+
 @app.route("/saludo", methods=["GET"])
 def saludo():
     return jsonify({
         "mensaje": "Hola desde la API Flask"
     })
+
 
 @app.route("/archivo-error", methods=["GET"])
 def archivo_error():
@@ -23,6 +42,7 @@ def archivo_error():
             "mensaje": "No se pudo abrir el archivo solicitado"
         }), 500
 
+
 @app.route("/db-error", methods=["GET"])
 def db_error():
     try:
@@ -34,16 +54,11 @@ def db_error():
             "mensaje": "No se pudo acceder a la base de datos"
         }), 500
 
+
 @app.route("/db-ok", methods=["GET"])
 def db_ok():
     try:
-        conexion = mysql.connector.connect(
-            host="localhost",
-            port=3506,
-            user="root",
-            password="eneas2805",
-            database="basicosd"
-        )
+        conexion = get_db_connection()
 
         cursor = conexion.cursor()
         cursor.execute("SELECT username, email FROM user LIMIT 1")
@@ -70,6 +85,7 @@ def db_ok():
             "tipo": "DB_ERROR",
             "mensaje": "No se pudo acceder correctamente a la base de datos"
         }), 500
+
 
 @app.route("/pokemon/<nombre>", methods=["GET"])
 def pokemon(nombre):
@@ -101,6 +117,7 @@ def pokemon(nombre):
             "mensaje": "No se pudo consultar la API de Pokémon"
         }), 500
 
+
 @app.route("/pokemon-error", methods=["GET"])
 def pokemon_error():
     try:
@@ -129,16 +146,11 @@ def pokemon_error():
             "mensaje": "No se pudo consultar la API de Pokémon"
         }), 500
 
+
 @app.route("/db-error-real", methods=["GET"])
 def db_error_real():
     try:
-        conexion = mysql.connector.connect(
-            host="localhost",
-            port=3506,
-            user="root",
-            password="eneas2805",
-            database="basicosd"
-        )
+        conexion = get_db_connection()
 
         cursor = conexion.cursor()
         cursor.execute("SELECT username, email FROM tabla_que_no_existe")
@@ -157,6 +169,7 @@ def db_error_real():
             "tipo": "DB_ERROR_REAL",
             "mensaje": "Se produjo un error real al consultar la base de datos"
         }), 500
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

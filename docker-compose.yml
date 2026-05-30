@@ -1,14 +1,76 @@
 services:
   mysqldb:
     image: mysql:8.0.31-oracle
+    container_name: mysqldb
     restart: unless-stopped
-    env_file: ./.env
     environment:
-      - MYSQL_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD
-      - MYSQL_DATABASE=$MYSQLDB_DATABASE
+      MYSQL_ROOT_PASSWORD: eneas2805
+      MYSQL_DATABASE: basicosd
     ports:
-      - $MYSQLDB_LOCAL_PORT:$MYSQLDB_DOCKER_PORT
+      - "3507:3306"
     volumes:
       - db:/var/lib/mysql
+    networks:
+      - app-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - app-network
+
+  api-flask:
+    build:
+      context: ./api_flask
+      dockerfile: Dockerfile
+    container_name: api-flask
+    restart: unless-stopped
+    depends_on:
+      - mysqldb
+    ports:
+      - "5000:5000"
+    environment:
+      MYSQL_HOST: mysqldb
+      MYSQL_PORT: 3306
+      MYSQL_USER: root
+      MYSQL_PASSWORD: eneas2805
+      MYSQL_DATABASE: basicosd
+    networks:
+      - app-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spring-app
+    restart: unless-stopped
+    depends_on:
+      - mysqldb
+      - rabbitmq
+      - api-flask
+    ports:
+      - "8099:8099"
+    environment:
+      MYSQL_HOST: mysqldb
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: basicosd
+      MYSQL_USER: root
+      MYSQL_PASSWORD: eneas2805
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
+      API_FLASK_BASE_URL: http://api-flask:5000
+    networks:
+      - app-network
+
 volumes:
-    db:
+  db:
+
+networks:
+  app-network:
+    driver: bridge

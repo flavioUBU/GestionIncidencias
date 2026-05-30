@@ -1,5 +1,8 @@
 package com.sistemasdistr.basico.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -10,6 +13,10 @@ import org.springframework.web.client.RestTemplate;
 public class ApiTestService {
 
     private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Value("${api.flask.base-url:http://api-flask:5000}")
+    private String flaskBaseUrl;
 
     public ApiTestService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -29,13 +36,13 @@ public class ApiTestService {
     }
 
     private String llamarApiExterna() {
-        String url = "http://localhost:5000/saludo";
+        String url = flaskBaseUrl + "/saludo";
         return restTemplate.getForObject(url, String.class);
     }
 
     public String probarErrorArchivo() {
         try {
-            String url = "http://localhost:5000/archivo-error";
+            String url = flaskBaseUrl + "/archivo-error";
             return restTemplate.getForObject(url, String.class);
         } catch (HttpServerErrorException e) {
             return "La API Flask informó de un error al abrir un archivo.";
@@ -48,7 +55,7 @@ public class ApiTestService {
 
     public String probarErrorBaseDatos() {
         try {
-            String url = "http://localhost:5000/db-error";
+            String url = flaskBaseUrl + "/db-error";
             return restTemplate.getForObject(url, String.class);
         } catch (HttpServerErrorException e) {
             return "La API Flask informó de un error de acceso a la base de datos.";
@@ -61,13 +68,15 @@ public class ApiTestService {
 
     public String probarPokemon() {
         try {
-            String url = "http://localhost:5000/pokemon/pikachu";
+            String url = flaskBaseUrl + "/pokemon/pikachu";
             String respuesta = restTemplate.getForObject(url, String.class);
 
-            String nombre = extraerValor(respuesta, "nombre");
-            String id = extraerValor(respuesta, "id");
-            String altura = extraerValor(respuesta, "altura");
-            String peso = extraerValor(respuesta, "peso");
+            JsonNode json = objectMapper.readTree(respuesta);
+
+            String nombre = json.path("nombre").asText("desconocido");
+            String id = json.path("id").asText("desconocido");
+            String altura = json.path("altura").asText("desconocido");
+            String peso = json.path("peso").asText("desconocido");
 
             return "Pokémon consultado correctamente -> Nombre: " + nombre
                     + ", ID: " + id
@@ -82,35 +91,14 @@ public class ApiTestService {
             return "La API Flask informó de un error al consultar Pokémon.";
         } catch (RestClientException e) {
             return "No se pudo conectar con la API Flask.";
+        } catch (Exception e) {
+            return "No se pudo interpretar correctamente la respuesta de la API Flask.";
         }
-    }
-
-    private String extraerValor(String json, String clave) {
-        String patronTexto = "\"" + clave + "\": \"";
-        int inicioTexto = json.indexOf(patronTexto);
-        if (inicioTexto != -1) {
-            inicioTexto += patronTexto.length();
-            int finTexto = json.indexOf("\"", inicioTexto);
-            return json.substring(inicioTexto, finTexto);
-        }
-
-        String patronNumero = "\"" + clave + "\": ";
-        int inicioNumero = json.indexOf(patronNumero);
-        if (inicioNumero != -1) {
-            inicioNumero += patronNumero.length();
-            int finNumero = json.indexOf(",", inicioNumero);
-            if (finNumero == -1) {
-                finNumero = json.indexOf("}", inicioNumero);
-            }
-            return json.substring(inicioNumero, finNumero).trim();
-        }
-
-        return "desconocido";
     }
 
     public String probarPokemonError() {
         try {
-            String url = "http://localhost:5000/pokemon-error";
+            String url = flaskBaseUrl + "/pokemon-error";
             String respuesta = restTemplate.getForObject(url, String.class);
             return "Respuesta inesperada: " + respuesta;
         } catch (HttpClientErrorException e) {
@@ -127,7 +115,7 @@ public class ApiTestService {
 
     public String probarBaseDatosOk() {
         try {
-            String url = "http://localhost:5000/db-ok";
+            String url = flaskBaseUrl + "/db-ok";
             String respuesta = restTemplate.getForObject(url, String.class);
             return "Consulta de base de datos realizada correctamente: " + respuesta;
         } catch (HttpClientErrorException e) {
@@ -141,7 +129,7 @@ public class ApiTestService {
 
     public String probarBaseDatosErrorReal() {
         try {
-            String url = "http://localhost:5000/db-error-real";
+            String url = flaskBaseUrl + "/db-error-real";
             String respuesta = restTemplate.getForObject(url, String.class);
             return "Respuesta inesperada: " + respuesta;
         } catch (HttpClientErrorException e) {
