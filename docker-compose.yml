@@ -4,8 +4,8 @@ services:
     container_name: mysqldb
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: eneas2805
-      MYSQL_DATABASE: basicosd
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
       - "3507:3306"
     volumes:
@@ -37,8 +37,8 @@ services:
       MYSQL_HOST: mysqldb
       MYSQL_PORT: 3306
       MYSQL_USER: root
-      MYSQL_PASSWORD: eneas2805
-      MYSQL_DATABASE: basicosd
+      MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     networks:
       - app-network
 
@@ -57,9 +57,9 @@ services:
     environment:
       MYSQL_HOST: mysqldb
       MYSQL_PORT: 3306
-      MYSQL_DATABASE: basicosd
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: root
-      MYSQL_PASSWORD: eneas2805
+      MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: 5672
       RABBITMQ_USER: guest

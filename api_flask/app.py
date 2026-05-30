@@ -8,8 +8,11 @@ app = Flask(__name__)
 DB_HOST = os.getenv("MYSQL_HOST", "mysqldb")
 DB_PORT = int(os.getenv("MYSQL_PORT", "3306"))
 DB_USER = os.getenv("MYSQL_USER", "root")
-DB_PASSWORD = os.getenv("MYSQL_PASSWORD", "eneas2805")
+DB_PASSWORD = os.getenv("MYSQL_PASSWORD")
 DB_NAME = os.getenv("MYSQL_DATABASE", "basicosd")
+
+if not DB_PASSWORD:
+    raise RuntimeError("Falta la variable de entorno MYSQL_PASSWORD")
 
 
 def get_db_connection():
